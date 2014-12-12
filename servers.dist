@@ -1,0 +1,17 @@
+"""
+This file specifies the servers used by the go.py script.
+
+Copy this file to settings.py and then add the servers you want to connect
+and tunnel to as individual dictionary entries within the SERVERS list.
+"""
+
+SERVERS = [
+        {
+        'nickname': '',
+        'fqdn':     '',
+        'ip':       '',
+        'port':     22,
+        },
+
+    ]
+
