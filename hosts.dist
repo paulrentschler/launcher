@@ -1,0 +1,14 @@
+"""This file specifies the hosts used by the go.py script.
+
+Copy this file to hosts.py and then add the hosts you want to connect
+and tunnel to as individual dictionary entries within the HOSTS list.
+"""
+
+HOSTS = [
+    {
+        'nickname': '',
+        'fqdn':     '',
+        'ip':       '',
+        'port':     22,
+    },
+]

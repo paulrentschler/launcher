@@ -5,15 +5,15 @@ import getpass
 import os
 
 
-class Server:
+class Host:
     def __init__(self, fqdn='', ip='', port=22):
-        """Create the Server instance
+        """Create the Host instance
 
         Keyword Arguments:
-            fqdn {str} -- Fully Qualified Domain Name for the server
+            fqdn {str} -- Fully Qualified Domain Name for the host
                           (default: {''})
-            ip {str} -- IP address for the server (default: {''})
-            port {number} -- SSH port for the server (default: {22})
+            ip {str} -- IP address for the host (default: {''})
+            port {number} -- SSH port for the host (default: {22})
         """
         self.fqdn = fqdn.strip().lower()
         self.ip = ip.strip()
@@ -27,82 +27,82 @@ class Server:
 
 
 class Launcher:
-    def __init__(self, servers):
+    def __init__(self, hosts):
         """Initialize the Launcher instance
 
         Arguments:
-            servers {list} -- List of dicts that define the servers that can
+            hosts {list} -- List of dicts that define the hosts that can
                               be connected to
         """
-        # dictionary of servers that can be connected to
+        # dictionary of hosts that can be connected to
         #   listed by nickname, FQDN, and/or IP address
-        self.servers = {}
-        # list of servers that can be connected to
-        #   each server only listed once
+        self.hosts = {}
+        # list of hosts that can be connected to
+        #   each host only listed once
         self.displayable = []
-        # build the list of Server instances to connect to
-        for item in servers:
+        # build the list of host instances to connect to
+        for item in hosts:
             displayed = False
             nickname = item.pop('nickname', '').strip().lower()
-            server = Server(**item)
-            if server.address:
+            host = Host(**item)
+            if host.address:
                 if nickname != '':
-                    self.servers[nickname] = server
+                    self.hosts[nickname] = host
                     self.displayable.append(nickname)
                     displayed = True
-                if server.fqdn != '':
-                    self.servers[server.fqdn] = server
+                if host.fqdn != '':
+                    self.hosts[host.fqdn] = host
                     if not displayed:
-                        self.displayable.append(fqdn)
+                        self.displayable.append(host.fqdn)
                         displayed = True
-                if server.ip != '':
-                    self.servers[server.ip] = server
+                if host.ip != '':
+                    self.hosts[host.ip] = host
                     if not displayed:
-                        self.displayable.append(ip)
+                        self.displayable.append(host.ip)
 
     def connect(self, identifier):
-        """Connect to the specified server via SSH
+        """Connect to the specified host via SSH
 
         Arguments:
-            identifier {str} -- nickname, FQDN, or IP address of the server
+            identifier {str} -- nickname, FQDN, or IP address of the host
                                 to connect to
         """
         try:
-            server = self.lookup(identifier)
+            host = self.lookup(identifier)
         except KeyError:
-            print('\nThe server you specified could not be found.\n')
+            print('\nThe host you specified could not be found.\n')
         else:
             username = getpass.getuser()
-            cmd = 'ssh -p {} {}@{}'.format(server.port, username, server.address)  # NOQA
+            cmd = 'ssh -p {} {}@{}'.format(host.port, username, host.address)  # NOQA
             os.system(cmd)
 
     def display_list(self):
-        """Displays a list of the available servers"""
-        print('\nservers to connect to:')
+        """Displays a list of the available hosts"""
+        print('\nhosts to connect to:')
         for identifier in self.displayable:
             print('  {}'.format(identifier))
         print('\n')
 
     def lookup(self, keyword):
-        """Lookup the server by keyword (nickname, FQDN, or IP address)
+        """Lookup the host by keyword (nickname, FQDN, or IP address)
 
         Arguments:
-            keyword {str} -- nickname, FQDN, or IP address of the server
+            keyword {str} -- nickname, FQDN, or IP address of the host
 
         Raises:
-            KeyError -- Raised when no server can be found by the keyword
+            KeyError -- Raised when no host can be found by the keyword
 
         Returns:
-            {dict} -- Dict of server information
+            {dict} -- Dict of host information
         """
         keyword = keyword.strip().lower()
-        return self.servers[keyword]
+        return self.hosts[keyword]
 
     def tunnel(self, identifier):
-        """Establish an SSH tunnel to the specified server
+        """Establish an SSH tunnel to the specified host
 
         Arguments:
-            identifier {str} -- nickname, FQDN, or IP address of the server
+            identifier {str} -- nickname, FQDN, or IP address of the host
                                 to connect to
         """
         ### TODO: implement this
@@ -111,31 +111,35 @@ class Launcher:
 
 if __name__ == '__main__':
     try:
-        from servers import *
+        from hosts import HOSTS
     except ImportError:
-        print('\nNo servers defined!')
-        print('Copy servers.dist to servers.py and '
-              'edit the file to fix this problem.\n')
+        try:
+            # include for backwards compatibility
+            from servers import SERVERS
+        except ImportError:
+            print('\nNo hosts defined!')
+            print('Copy hosts.dist to hosts.py and '
+                  'edit the file to fix this problem.\n')
 
     launcher = Launcher()
     parser = argparse.ArgumentParser(
-        description='Launch SSH connections and tunnels to other servers.'
+        description='Launch SSH connections and tunnels to other hosts.'
     )
     parser.add_argument(
-        'server',
+        'host',
         nargs='?',
         default='',
-        help='nickname, FQDN, or IP address of the server to connect to'
+        help='nickname, FQDN, or IP address of the host to connect to'
     )
     parser.add_argument(
         '-l', '--list',
-        dest='list_servers',
+        dest='list_hosts',
         action='store_true',
-        help='list the available servers to connect to'
+        help='list the available hosts to connect to'
     )
     args = parser.parse_args()
-    if args.server == '' or args.list_servers:
+    if args.host == '' or args.list_hosts:
         parser.print_help()
         launcher.display_list()
     else:
-        launcher.connect(args.server)
+        launcher.connect(args.host)

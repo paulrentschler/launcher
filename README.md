@@ -1,6 +1,6 @@
 # launcher
 
-Establish SSH connections and tunnels from the command line by referencing servers from a pre-configured list.
+Establish SSH connections and tunnels from the command line by referencing hosts from a pre-configured list.
 
 ## Installation
 
@@ -8,9 +8,9 @@ Establish SSH connections and tunnels from the command line by referencing serve
 1. Symlink the `go.py` file to `go` in a directory within your path.
 
 
-## Define the servers to connect to
+## Define the hosts to connect to
 
-Copy the included `servers.dist` file to `servers.py` (excluded from the repo) and then edit that file to specify all of the servers you want to be able to connect to.
+Copy the included `hosts.dist` file to `hosts.py` (excluded from the repo) and then edit that file to specify all of the hosts you want to be able to connect to.
 
 Each entry must specify the port and at least a fully qualified domain name (FQDN) or an IP address. Both the FQDN and IP address can be specified and the FQDN takes precedence.
 
