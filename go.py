@@ -106,7 +106,7 @@ class Launcher:
                                 to connect to
         """
         ### TODO: implement this
-        print('This feature is not available at this time.')
+        raise NotImplemented('This feature is not available at this time.')
 
 
 if __name__ == '__main__':
@@ -120,8 +120,10 @@ if __name__ == '__main__':
             print('\nNo hosts defined!')
             print('Copy hosts.dist to hosts.py and '
                   'edit the file to fix this problem.\n')
+        else:
+            HOSTS = SERVERS
 
-    launcher = Launcher()
+    launcher = Launcher(HOSTS)
     parser = argparse.ArgumentParser(
         description='Launch SSH connections and tunnels to other hosts.'
     )
