@@ -4,6 +4,8 @@ Copy this file to hosts.py and then add the hosts you want to connect
 and tunnel to as individual dictionary entries within the HOSTS list.
 """
 
+PREFIXES = []
+
 HOSTS = [
     {
         'nickname': '',

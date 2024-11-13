@@ -27,12 +27,13 @@ class Host:
 
 
 class Launcher:
-    def __init__(self, hosts):
+    def __init__(self, hosts, prefixes):
         """Initialize the Launcher instance
 
         Arguments:
             hosts {list} -- List of dicts that define the hosts that can
-                              be connected to
+                            be connected to
+            prefixes {list} -- List of nickname prefixes to strip off
         """
         # dictionary of hosts that can be connected to
         #   listed by nickname, FQDN, and/or IP address
@@ -50,6 +51,12 @@ class Launcher:
                     self.hosts[nickname] = host
                     self.displayable.append(nickname)
                     displayed = True
+                    for prefix in prefixes:
+                        alt_nickname = nickname.replace(prefix, '')
+                        if alt_nickname == nickname:
+                            continue
+                        self.hosts[alt_nickname] = host
+                        self.displayable.append(alt_nickname)
                 if host.fqdn != '':
                     self.hosts[host.fqdn] = host
                     if not displayed:
@@ -122,8 +129,12 @@ if __name__ == '__main__':
                   'edit the file to fix this problem.\n')
         else:
             HOSTS = SERVERS
+    try:
+        from hosts import PREFIXES
+    except ImportError:
+        PREFIXES = []
 
-    launcher = Launcher(HOSTS)
+    launcher = Launcher(HOSTS, PREFIXES)
     parser = argparse.ArgumentParser(
         description='Launch SSH connections and tunnels to other hosts.'
     )
